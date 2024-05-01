@@ -1,7 +1,7 @@
 import axios from "axios";
 
 axios
-  .get("http://localhost:3004/api/")
+  .get("http://localhost:3001/api/")
   .then((response) => {
     const body = document.getElementById('body');
     body.className = "bg-cyan-800 flex justify-center items-center";
