@@ -1,5 +1,3 @@
-import axios from "axios";
-
 function createListe(characters) {
   const body = document.getElementById('body');
   body.className = "bg-cyan-800 flex justify-center items-center";
@@ -10,6 +8,7 @@ function createListe(characters) {
   })
   body.appendChild(ul);
 }
+
 
 function createItem(character, ul) {
   const li = document.createElement('li');
@@ -34,41 +33,93 @@ function createItem(character, ul) {
   ul.appendChild(li);
 }
 
-function showProducts(name, ul) {
-  const body = document.getElementById('body');
-  ul.remove();
 
-  const query = `
-  query Produits($filtre: String) {
+async function showProducts(name, listePersonnage) {
+  const body = document.getElementById('body');
+  const div = document.createElement('div');
+  div.className = "flex flex-col"
+  listePersonnage.remove();
+
+  fetchProduits(name).then((produits) => {
+    div.appendChild(createListeProduits(produits));
+
+    const button = document.createElement('button');
+    button.textContent = 'Return';
+    button.className = "bg-orange-500 rounded-2xl px-4 py-2 mt-5";
+    button.onclick = () => {
+      button.remove();
+      div.remove();
+      body.appendChild(listePersonnage);
+    };
+
+    div.appendChild(button);
+    body.appendChild(div);
+  });
+}
+
+
+async function fetchProduits(name) {
+  const query = `query Produits($filtre: String) {
     produits(filtre: $filtre) {
       description
       url
     }
   }`;
 
-  const variables = { filtre: name };
+  const response = await fetch("http://localhost:4000", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables: {
+        filtre: name,
+      },
+    }),
+  });
 
-  axios
-    .get("http://localhost:4000", {
-      params: {
-        query: query,
-        variables: variables
-      }
-    })
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => console.error(error));
+  const json = await response.json();
 
-  const button = document.createElement('button');
-  button.textContent = 'Return';
-  button.className = "bg-orange-500 rounded-2xl px-4 py-2";
-  button.onclick = () => {
-    button.remove();
-    body.appendChild(ul);
-  };
+  return json.data.produits;
+}
 
-  body.appendChild(button);
+function createListeProduits(produits) {
+  const ul = document.createElement("ul");
+  ul.className = "list-group flex flex-col justify-center align-center w-full";
+  if (produits.length === 0) {
+    const noProduits = document.createElement("h2");
+    noProduits.textContent = "Aucun produits reliés au super-héros...";
+    noProduits.className = "text-2xl mt-5 font-bold text-white";
+    ul.appendChild(noProduits);
+    return ul;
+  }
+
+  produits.forEach(produit => {
+    createProduit(produit, ul)
+  })
+  return ul;
+}
+
+function createProduit(produit, ul) {
+  const li = document.createElement('li');
+  const div = document.createElement('div');
+  const description = document.createElement('h3');
+  const url = document.createElement('a');
+
+  description.textContent = produit.description;
+  url.textContent = produit.url;
+  url.href = produit.url;
+  div.className = "text-wrap";
+
+  div.appendChild(description);
+  div.appendChild(url);
+
+  li.className = "text-2xl m-2 font-bold text-white bg-red-500 p-2 text-center";
+
+  li.appendChild(div);
+  ul.appendChild(li);
 }
 
 export { createListe };
