@@ -1,3 +1,7 @@
+/**
+ * @author Emmanuel Trudeau & Marc-Alexandre Bouchard
+ */
+
 require("dotenv").config();
 
 const path = require("path");

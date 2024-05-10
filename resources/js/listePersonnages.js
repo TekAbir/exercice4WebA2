@@ -1,3 +1,12 @@
+/**
+ * @author Emmanuel Trudeau & Marc-Alexandre Bouchard
+ */
+
+/**
+ * Creer un liste contenant les super-heros
+ * 
+ * @param {Object} characters 
+ */
 function createListe(characters) {
   const body = document.getElementById('body');
   body.className = "bg-cyan-800 flex justify-center items-center";
@@ -9,7 +18,12 @@ function createListe(characters) {
   body.appendChild(ul);
 }
 
-
+/**
+ * Retourne un div contenant les information d'un super-hero
+ * 
+ * @param {Object} character 
+ * @param {HTMLElement} ul 
+ */
 function createItem(character, ul) {
   const li = document.createElement('li');
   const div = document.createElement('div');
